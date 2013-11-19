@@ -4,11 +4,11 @@ import java.util.Stack;
 
 public class ExprTree {
   
-  public static final int MAX_LEVEL = 8;
+  public static final int MAX_LEVEL = 6;
   
   private ExprNode root;
   private Random rand = new Random();
-  private ArrayList<Integer> list = new ArrayList<Integer>();
+  private ArrayList<Functions> list = new ArrayList<Functions>();
   
   public ExprTree(){
     root = null;
@@ -16,8 +16,8 @@ public class ExprTree {
   
   public ExprTree build() {
     ExprTree tree = new ExprTree();
-    for(int i = 0; i < 8; i++){
-      tree.insert(new ExprNode(rand.nextInt(2)+1));
+    for(int i = 0; i < MAX_LEVEL; i++){
+      tree.insert(new ExprNode());
     }
     tree.inOrder();
     return tree;
@@ -31,14 +31,12 @@ public class ExprTree {
       ExprNode parent = null;
       ExprNode current = root;
       while (current != null){
-        if (node.getData() <= 3) {
-          parent = current;
-          current = current.getLeft();
-        }
+        parent = current;
+        current = current.getLeft();
       }
       // Create the new node and attach it to the parent node
-      if(parent.getData() == 3){   
-        if(parent.getRight() == null && node.getData() != 3){
+      if(parent.getFun() instanceof Avg || parent.getFun() instanceof Multiple){   
+        if(parent.getRight() == null){
           parent.setRight(node);
         }else{
           parent.setLeft(node);
@@ -59,8 +57,7 @@ public class ExprTree {
   private void inOrder(ExprNode root) {
     if (root == null) return;
     inOrder(root.getLeft());
-    list.add(root.getData());
-    System.out.print(root.getData() + " ");
+    list.add(root.getFun());
     inOrder(root.getRight());
   }
   
@@ -73,22 +70,18 @@ public class ExprTree {
    * @return the result of evaluating the function
    */
   public double evaluate(double x, double y){
-    Stack<Double> operands = new Stack<Double>();
-    for(int i = 0; i < list.size(); i++){
-      if(i == 0)
-        operands.push(avg(Math.cos(Math.PI * x), Math.sin(Math.PI *y)));
-      else{
-        double op1 = operands.pop();
-        if(list.get(i) == 1)
-          operands.push(Math.sin(Math.PI * op1));
-        else if(list.get(i) == 2)
-          operands.push(Math.cos(Math.PI * op1));
-        //else if (list.get(i) == 3)
-        //operands.push(avg(op1, (Math.sin(Math.PI * op1))));
+    double pointer = 0;
+    double check = 0;
+    for(Functions t : list){
+      if(pointer == 0){
+        pointer = t.result(x,y);
+        check = pointer;
+      }else{
+        pointer = t.result(check,check);
+        check = pointer;
       }
     }
-    double result = operands.pop();
-    //System.out.println(result);
+    double result = pointer;
     return result;
   }
   
@@ -97,26 +90,22 @@ public class ExprTree {
    * represented by this node.
    */
   public String exprAsString(){
-    Stack<String> operands = new Stack<String>();
-    for(int i = 0; i < list.size(); i++){
-      if(i == 0)
-        operands.push("avg(cos(PI * x), sin(PI *y))");
-      else{
-        String op1 = operands.pop();
-        if(list.get(i) == 1)
-          operands.push("sin(PI * "+op1+")");
-        else if(list.get(i) == 2)
-          operands.push("cos(PI * "+op1+")");
-        //else if (list.get(i) == 3)
-        //  result = (avg(op1, (Math.sin(Math.PI * x))));
+    String x = "x";
+    String y = "y";
+    String pointer = null;
+    String check = "";
+    for(Functions t : list){
+      if(pointer == null){
+        pointer = t.getExpr(x,y);
+        check = pointer;
+      }else{
+        pointer = t.getExpr(check,check);
+        check = pointer;
       }
     }
-    String result = operands.pop();
+    String result = pointer;
     return result;
   }
   
-  private double avg(double x, double y){
-    return (x + y) / 2.0;
-  }
 }
 

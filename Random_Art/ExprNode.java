@@ -1,15 +1,28 @@
+import java.util.Random;
+
 public class ExprNode {
- 
+  
+  private Functions value;
   private ExprNode left;
   private ExprNode right;
-  private int data;
   
-  public ExprNode(int newData) {
-    this.data = newData;
-  }
-  
-  public int getData(){
-    return this.data; 
+  public ExprNode(){
+    Random rand = new Random();
+    int random = rand.nextInt(6);
+    if(random == 0)
+      value = new Sin();
+    if(random == 1)
+      value = new IEEEremainders();
+    if(random == 2)
+      value = new Cos();
+    if(random == 3)
+      value = new Abs();
+    if(random == 4)
+      value = new Avg();
+    if(random == 5)
+      value = new Multiple();
+    if(random == 6)
+      value = new Expo();
   }
   
   public ExprNode getLeft(){
@@ -28,4 +41,7 @@ public class ExprNode {
     this.right = right;
   }
   
+  public Functions getFun(){
+      return this.value;
+  }
 }
