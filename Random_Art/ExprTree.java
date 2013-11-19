@@ -4,8 +4,8 @@ import java.util.Stack;
 
 public class ExprTree {
   
-  public static final int MAX_LEVEL = 6;
-  
+  public static int MAX_LEVEL = 8;
+
   private ExprNode root;
   private Random rand = new Random();
   private ArrayList<Functions> list = new ArrayList<Functions>();
@@ -106,6 +106,12 @@ public class ExprTree {
     String result = pointer;
     return result;
   }
-  
+  public static void setMaxlv(int lv){
+    MAX_LEVEL = lv;
+  }
+  public int getMaxlv(){
+    return MAX_LEVEL;
+  }
+
 }
 
